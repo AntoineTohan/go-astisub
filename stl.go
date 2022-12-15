@@ -344,6 +344,15 @@ type gsiBlock struct {
 // newGSIBlock builds the subtitles GSI block
 func newGSIBlock(s Subtitles) (g *gsiBlock) {
 	// Init
+	const (
+		Nanosecond  time.Duration = 1
+		Microsecond               = 1000 * Nanosecond
+		Millisecond               = 1000 * Microsecond
+		Second                    = 1000 * Millisecond
+		Minute                    = 60 * Second
+		Hour                      = 60 * Minute
+	)
+
 	g = &gsiBlock{
 		characterCodeTableNumber: stlCharacterCodeTableNumberLatin,
 		codePageNumber:           stlCodePageNumberMultilingual,
@@ -363,33 +372,59 @@ func newGSIBlock(s Subtitles) (g *gsiBlock) {
 		totalNumberOfSubtitleGroups:                      1,
 		totalNumberOfSubtitles:                           len(s.Items),
 		totalNumberOfTTIBlocks:                           len(s.Items),
-	}
+		editorContactDetails:                             "",
+		editorName:                                       "",
+		originalProgramTitle:                             "",
+		revisionNumber:                                   1,
+		timecodeFirstInCue:                               Second * 1,
+		translatedEpisodeTitle:                           "",
+		translatedProgramTitle:                           "",
+		translatorContactDetails:                         "",
+		translatorName:                                   "",
+		userDefinedArea:                                  ""}
 
 	// Add metadata
 	if s.Metadata != nil {
+		g.characterCodeTableNumber = s.Metadata.STLCharacterCodeTableNumber
+		g.codePageNumber = s.Metadata.STLCodePageNumber
+		g.countryOfOrigin = s.Metadata.STLCountryOfOrigin
 		if s.Metadata.STLCreationDate != nil {
 			g.creationDate = *s.Metadata.STLCreationDate
 		}
-		g.countryOfOrigin = s.Metadata.STLCountryOfOrigin
+		g.diskSequenceNumber = s.Metadata.STLDiskSequenceNumber
 		g.displayStandardCode = s.Metadata.STLDisplayStandardCode
 		g.framerate = s.Metadata.Framerate
 		if v, ok := stlLanguageMapping.GetInverse(s.Metadata.Language); ok {
 			g.languageCode = v.(string)
 		}
-		g.originalProgramTitle = s.Metadata.Title
 		if s.Metadata.STLMaximumNumberOfDisplayableCharactersInAnyTextRow != nil {
 			g.maximumNumberOfDisplayableCharactersInAnyTextRow = *s.Metadata.STLMaximumNumberOfDisplayableCharactersInAnyTextRow
 		}
 		if s.Metadata.STLMaximumNumberOfDisplayableRows != nil {
 			g.maximumNumberOfDisplayableRows = *s.Metadata.STLMaximumNumberOfDisplayableRows
 		}
-		g.originalEpisodeTitle = s.Metadata.STLOriginalEpisodeTitle
-		g.publisher = s.Metadata.STLPublisher
 		if s.Metadata.STLRevisionDate != nil {
 			g.revisionDate = *s.Metadata.STLRevisionDate
 		}
 		g.subtitleListReferenceCode = s.Metadata.STLSubtitleListReferenceCode
+		g.timecodeStatus = s.Metadata.STLTimecodeStatus
 		g.timecodeStartOfProgramme = s.Metadata.STLTimecodeStartOfProgramme
+		g.totalNumberOfDisks = s.Metadata.STLTotalNumberOfDisks
+		g.totalNumberOfSubtitleGroups = s.Metadata.STLTotalNumberOfSubtitleGroups
+		g.totalNumberOfSubtitles = s.Metadata.STLTotalNumberOfSubtitles
+		g.totalNumberOfTTIBlocks = s.Metadata.STLTotalNumberOfTTIBlocks
+		g.editorContactDetails = s.Metadata.STLEditorContactDetails
+		g.editorName = s.Metadata.STLEditorName
+		g.originalProgramTitle = s.Metadata.STLOriginalProgramTitle
+		g.revisionNumber = s.Metadata.STLRevisionNumber
+		g.timecodeFirstInCue = s.Metadata.STLTimecodeFirstInCue
+		g.translatedEpisodeTitle = s.Metadata.STLTranslatedEpisodeTitle
+		g.translatedProgramTitle = s.Metadata.STLTranslatedProgramTitle
+		g.translatorContactDetails = s.Metadata.STLTranslatorContactDetails
+		g.translatorName = s.Metadata.STLTranslatorName
+		g.userDefinedArea = s.Metadata.STLUserDefinedArea
+		g.originalEpisodeTitle = s.Metadata.STLOriginalEpisodeTitle
+		g.publisher = s.Metadata.STLPublisher
 	}
 
 	// Timecode first in cue
