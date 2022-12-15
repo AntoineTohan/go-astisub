@@ -269,7 +269,7 @@ func (sa *StyleAttributes) propagateTeletextAttributes() {
 	}
 }
 
-//reference for migration: https://w3c.github.io/ttml-webvtt-mapping/
+// reference for migration: https://w3c.github.io/ttml-webvtt-mapping/
 func (sa *StyleAttributes) propagateTTMLAttributes() {
 	if sa.TTMLTextAlign != nil {
 		sa.WebVTTAlign = *sa.TTMLTextAlign
@@ -342,6 +342,26 @@ type Metadata struct {
 	STLTimecodeStartOfProgramme                         time.Duration
 	Title                                               string
 	TTMLCopyright                                       string
+
+	// ADD METADATA FOR STL GSI
+	STLCharacterCodeTableNumber    uint16
+	STLCodePageNumber              uint32
+	STLDiskSequenceNumber          int
+	STLEditorContactDetails        string
+	STLEditorName                  string
+	STLOriginalProgramTitle        string
+	STLRevisionNumber              int
+	STLTimecodeFirstInCue          time.Duration
+	STLTimecodeStatus              string
+	STLTotalNumberOfDisks          int
+	STLTotalNumberOfSubtitleGroups int
+	STLTotalNumberOfSubtitles      int
+	STLTotalNumberOfTTIBlocks      int
+	STLTranslatedEpisodeTitle      string
+	STLTranslatedProgramTitle      string
+	STLTranslatorContactDetails    string
+	STLTranslatorName              string
+	STLUserDefinedArea             string
 }
 
 // Region represents a subtitle's region
