@@ -408,7 +408,6 @@ func newGSIBlock(s Subtitles) (g *gsiBlock) {
 		}
 		g.subtitleListReferenceCode = s.Metadata.STLSubtitleListReferenceCode
 		g.timecodeStatus = s.Metadata.STLTimecodeStatus
-		g.timecodeStartOfProgramme = s.Metadata.STLTimecodeStartOfProgramme
 		g.totalNumberOfDisks = s.Metadata.STLTotalNumberOfDisks
 		g.totalNumberOfSubtitleGroups = s.Metadata.STLTotalNumberOfSubtitleGroups
 		g.totalNumberOfSubtitles = s.Metadata.STLTotalNumberOfSubtitles
@@ -417,7 +416,6 @@ func newGSIBlock(s Subtitles) (g *gsiBlock) {
 		g.editorName = s.Metadata.STLEditorName
 		g.originalProgramTitle = s.Metadata.STLOriginalProgramTitle
 		g.revisionNumber = s.Metadata.STLRevisionNumber
-		g.timecodeFirstInCue = s.Metadata.STLTimecodeFirstInCue
 		g.translatedEpisodeTitle = s.Metadata.STLTranslatedEpisodeTitle
 		g.translatedProgramTitle = s.Metadata.STLTranslatedProgramTitle
 		g.translatorContactDetails = s.Metadata.STLTranslatorContactDetails
@@ -425,6 +423,7 @@ func newGSIBlock(s Subtitles) (g *gsiBlock) {
 		g.userDefinedArea = s.Metadata.STLUserDefinedArea
 		g.originalEpisodeTitle = s.Metadata.STLOriginalEpisodeTitle
 		g.publisher = s.Metadata.STLPublisher
+		g.timecodeStartOfProgramme = s.Metadata.STLTimecodeStartOfProgramme
 	}
 
 	// Timecode first in cue
