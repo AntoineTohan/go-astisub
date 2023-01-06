@@ -686,14 +686,27 @@ type ttiBlock struct {
 	verticalPosition     int
 }
 
+func getSTLJustification(STLJustification int) byte {
+	if STLJustification == 2 {
+		return stlJustificationCodeLeftJustifiedText
+	} else if STLJustification == 3 {
+		return stlJustificationCodeCentredText
+	} else if STLJustification == 4 {
+		return stlJustificationCodeRightJustifiedText
+	} else {
+		return stlJustificationCodeUnchangedPresentation
+	}
+}
+
 // newTTIBlock builds an item TTI block
 func newTTIBlock(i *Item, idx int) (t *ttiBlock) {
 	// Init
+
 	t = &ttiBlock{
 		commentFlag:          stlCommentFlagTextContainsSubtitleData,
 		cumulativeStatus:     stlCumulativeStatusSubtitleNotPartOfACumulativeSet,
 		extensionBlockNumber: 255,
-		justificationCode:    stlJustificationCodeLeftJustifiedText,
+		justificationCode:    getSTLJustification(int(*i.InlineStyle.STLJustification)),
 		subtitleGroupNumber:  0,
 		subtitleNumber:       idx,
 		timecodeIn:           i.StartAt,
