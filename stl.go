@@ -1047,10 +1047,11 @@ func encodeTextSTL(i string) (o []byte) {
 		unquoted := quoted[1 : len(quoted)-1]
 		fmt.Println("---- stlUnicodeMapping unquoted : ", unquoted)
 
-		t, okt := stlUnicodeMapping.GetInverse(string(c))
-		fmt.Println("---- stlUnicodeMapping t : ", t)
-		fmt.Println("---- stlUnicodeMapping okt : ", okt)
-		fmt.Println("---- stlUnicodeMapping okt : ", t.(byte))
+		if t, okt := stlUnicodeMapping.GetInverse(string(c)); okt {
+			fmt.Println("---- stlUnicodeMapping t : ", t)
+			fmt.Println("---- stlUnicodeMapping okt : ", okt)
+			fmt.Println("---- stlUnicodeMapping okt : ", t.(byte))
+		}
 
 		if v, ok := stlUnicodeMapping.GetInverse(string(c)); ok {
 			o = append(o, v.(byte))
