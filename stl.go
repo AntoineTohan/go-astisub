@@ -1050,10 +1050,7 @@ func encodeTextSTL(i string) (o []byte) {
 		t, okt := stlUnicodeMapping.GetInverse(string(c))
 		fmt.Println("---- stlUnicodeMapping t : ", t)
 		fmt.Println("---- stlUnicodeMapping okt : ", okt)
-
-		t1, okt1 := stlUnicodeDiacritic.GetInverse(string(c))
-		fmt.Println("---- stlUnicodeDiacritic t1 : ", t1)
-		fmt.Println("---- stlUnicodeDiacritic okt1 : ", okt1)
+		fmt.Println("---- stlUnicodeMapping okt : ", t.(byte))
 
 		if v, ok := stlUnicodeMapping.GetInverse(string(c)); ok {
 			o = append(o, v.(byte))
