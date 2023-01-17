@@ -972,6 +972,7 @@ var stlUnicodeDiacritic = astikit.NewBiMap().
 // STL unicode mapping
 var stlUnicodeMapping = astikit.NewBiMap().
 	Set(byte('\x8a'), "\u000a"). // Line break
+	Set(byte('\x8a'), "\u008a"). // Line break
 	Set(byte('\xa8'), "\u00a4"). // ¤
 	Set(byte('\xa9'), "\u2018"). // ‘
 	Set(byte('\xaa'), "\u201C"). // “
