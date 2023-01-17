@@ -1035,11 +1035,20 @@ var stlUnicodeMapping = astikit.NewBiMap().
 // encodeTextSTL encodes the STL text
 func encodeTextSTL(i string) (o []byte) {
 	i = string(norm.NFD.Bytes([]byte(i)))
+	fmt.Println("---- i : ", i)
 	o = append(o, byte('\x0D'))
 	o = append(o, byte('\x0B'))
 	o = append(o, byte('\x0B'))
 	o = append(o, byte('\x02'))
 	for _, c := range i {
+		t, okt := stlUnicodeMapping.GetInverse(string(c))
+		fmt.Println("---- stlUnicodeMapping t : ", t)
+		fmt.Println("---- stlUnicodeMapping okt : ", okt)
+
+		t1, okt1 := stlUnicodeDiacritic.GetInverse(string(c))
+		fmt.Println("---- stlUnicodeDiacritic t1 : ", t1)
+		fmt.Println("---- stlUnicodeDiacritic okt1 : ", okt1)
+
 		if v, ok := stlUnicodeMapping.GetInverse(string(c)); ok {
 			o = append(o, v.(byte))
 		} else if v, ok := stlUnicodeDiacritic.GetInverse(string(c)); ok {
