@@ -1041,6 +1041,8 @@ func encodeTextSTL(i string) (o []byte) {
 	o = append(o, byte('\x0B'))
 	o = append(o, byte('\x02'))
 	for _, c := range i {
+		fmt.Println("---- stlUnicodeMapping string(c) : ", string(c))
+
 		t, okt := stlUnicodeMapping.GetInverse(string(c))
 		fmt.Println("---- stlUnicodeMapping t : ", t)
 		fmt.Println("---- stlUnicodeMapping okt : ", okt)
