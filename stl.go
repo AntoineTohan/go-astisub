@@ -1056,8 +1056,8 @@ func encodeTextSTL(i string) (o []byte) {
 		t, e := stlUnicodeMapping.GetInverse(string(c))
 		refO := strconv.QuoteRuneToASCII('\u008a')
 		ref := refO[1 : len(refO)-1]
-		fmt.Println("---- if t == 138 : ", t == 138)
-		fmt.Println("---- if unquoted == ref : ", t == ref)
+		fmt.Println("---- if t == 138 : ", t, t.(int), 138, t == 138, t.(int) == 138)
+		fmt.Println("---- if unquoted == ref : ", unquoted, ref, unquoted == ref)
 		if t == 138 && unquoted == ref {
 			fmt.Println("---- stlUnicodeMapping t : ", t)
 			fmt.Println("---- stlUnicodeMapping e : ", e)
