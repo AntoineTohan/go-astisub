@@ -1056,6 +1056,8 @@ func encodeTextSTL(i string) (o []byte) {
 		t, e := stlUnicodeMapping.GetInverse(string(c))
 		refO := strconv.QuoteRuneToASCII('\u008a')
 		ref := refO[1 : len(refO)-1]
+		fmt.Println("---- if t == 138 : ", t == 138)
+		fmt.Println("---- if unquoted == ref : ", t == ref)
 		if t == 138 && unquoted == ref {
 			fmt.Println("---- stlUnicodeMapping t : ", t)
 			fmt.Println("---- stlUnicodeMapping e : ", e)
@@ -1068,9 +1070,7 @@ func encodeTextSTL(i string) (o []byte) {
 
 			// DOUBLE HEIGHT SECOND LINE
 			o = append(o, byte('\x0D'))
-		}
-
-		if v, ok := stlUnicodeMapping.GetInverse(string(c)); ok {
+		} else if v, ok := stlUnicodeMapping.GetInverse(string(c)); ok {
 			o = append(o, v.(byte))
 		} else if v, ok := stlUnicodeDiacritic.GetInverse(string(c)); ok {
 			o = append(o[:len(o)-1], v.(byte), o[len(o)-1])
