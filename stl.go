@@ -1059,11 +1059,11 @@ func encodeTextSTL(i string) (o []byte) {
 		ref := refO[1 : len(refO)-1]
 
 		if t != nil {
-			fmt.Println("---- if t == 138 : ", t, t.(int), t == 138, t.(int) == 138)
+			fmt.Println("---- if t == 138 : ", t, t.(uint8), t == 138, t.(uint8) == 138)
 			fmt.Println("---- if unquoted == ref : ", unquoted, ref, unquoted == ref)
 		}
 
-		if t != nil && t.(int) == 138 && unquoted == ref {
+		if t != nil && t.(uint8) == 138 && unquoted == ref {
 
 			fmt.Println("---- stlUnicodeMapping t : ", t)
 			fmt.Println("---- stlUnicodeMapping e : ", e)
