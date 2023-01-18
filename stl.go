@@ -1054,22 +1054,11 @@ func encodeTextSTL(i string) (o []byte) {
 		unquoted := quoted[1 : len(quoted)-1]
 		fmt.Println("---- stlUnicodeMapping unquoted : ", unquoted)
 
-		t, e := stlUnicodeMapping.GetInverse(string(c))
+		t, _ := stlUnicodeMapping.GetInverse(string(c))
 		refO := strconv.QuoteRuneToASCII('\u008a')
 		ref := refO[1 : len(refO)-1]
 
-		if t != nil {
-			fmt.Println("---- if t == 138 : ", t, t.(uint8), t == 138, t.(uint8) == 138)
-			fmt.Println("---- if unquoted == ref : ", unquoted, ref, unquoted == ref)
-		}
-
 		if t != nil && t.(uint8) == 138 && unquoted == ref {
-
-			fmt.Println("---- stlUnicodeMapping t : ", t)
-			fmt.Println("---- stlUnicodeMapping e : ", e)
-			fmt.Println("---- stlUnicodeMapping refO : ", refO)
-			fmt.Println("---- stlUnicodeMapping ref : ", ref)
-
 			//BREAK LINE
 			o = append(o, byte('\x8A'))
 			o = append(o, byte('\x8A'))
