@@ -972,7 +972,6 @@ var stlUnicodeDiacritic = astikit.NewBiMap().
 // STL unicode mapping
 var stlUnicodeMapping = astikit.NewBiMap().
 	Set(byte('\x8a'), "\u000a"). // Line break
-	Set(byte('\x8a'), "\u008a"). // Line break
 	Set(byte('\xa8'), "\u00a4"). // ¤
 	Set(byte('\xa9'), "\u2018"). // ‘
 	Set(byte('\xaa'), "\u201C"). // “
@@ -1036,21 +1035,39 @@ var stlUnicodeMapping = astikit.NewBiMap().
 // encodeTextSTL encodes the STL text
 func encodeTextSTL(i string) (o []byte) {
 	i = string(norm.NFD.Bytes([]byte(i)))
+
 	fmt.Println("---- i : ", i)
+	// DOUBLE HEIGHT FIRST LINE
 	o = append(o, byte('\x0D'))
+
+	// START BOX
 	o = append(o, byte('\x0B'))
 	o = append(o, byte('\x0B'))
+
+	// COLOR OF TEXT CAPTION
 	o = append(o, byte('\x02'))
+
 	for _, c := range i {
 		fmt.Println("---- stlUnicodeMapping string(c) : ", string(c))
 		quoted := strconv.QuoteRuneToASCII(c)
 		unquoted := quoted[1 : len(quoted)-1]
 		fmt.Println("---- stlUnicodeMapping unquoted : ", unquoted)
 
-		if t, okt := stlUnicodeMapping.GetInverse(string(c)); okt {
+		t, e := stlUnicodeMapping.GetInverse(string(c))
+		refO := strconv.QuoteRuneToASCII('\u008a')
+		ref := refO[1 : len(refO)-1]
+		if t == 138 && unquoted == ref {
 			fmt.Println("---- stlUnicodeMapping t : ", t)
-			fmt.Println("---- stlUnicodeMapping okt : ", okt)
-			fmt.Println("---- stlUnicodeMapping okt : ", t.(byte))
+			fmt.Println("---- stlUnicodeMapping e : ", e)
+			fmt.Println("---- stlUnicodeMapping refO : ", refO)
+			fmt.Println("---- stlUnicodeMapping ref : ", ref)
+
+			//BREAK LINE
+			o = append(o, byte('\x8A'))
+			o = append(o, byte('\x8A'))
+
+			// DOUBLE HEIGHT SECOND LINE
+			o = append(o, byte('\x0D'))
 		}
 
 		if v, ok := stlUnicodeMapping.GetInverse(string(c)); ok {
@@ -1061,6 +1078,8 @@ func encodeTextSTL(i string) (o []byte) {
 			o = append(o, byte(c))
 		}
 	}
+
+	// END BOX
 	o = append(o, byte('\x0A'))
 	o = append(o, byte('\x0A'))
 	return
