@@ -1037,7 +1037,6 @@ var stlUnicodeMapping = astikit.NewBiMap().
 func encodeTextSTL(i string) (o []byte) {
 	i = string(norm.NFD.Bytes([]byte(i)))
 
-	fmt.Println("---- i : ", i)
 	// DOUBLE HEIGHT FIRST LINE
 	o = append(o, byte('\x0D'))
 
