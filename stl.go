@@ -972,6 +972,7 @@ var stlUnicodeDiacritic = astikit.NewBiMap().
 // STL unicode mapping
 var stlUnicodeMapping = astikit.NewBiMap().
 	Set(byte('\x8a'), "\u000a"). // Line break
+	Set(byte('\x8a'), "\u008a"). // Line break
 	Set(byte('\xa8'), "\u00a4"). // ¤
 	Set(byte('\xa9'), "\u2018"). // ‘
 	Set(byte('\xaa'), "\u201C"). // “
@@ -1056,9 +1057,14 @@ func encodeTextSTL(i string) (o []byte) {
 		t, e := stlUnicodeMapping.GetInverse(string(c))
 		refO := strconv.QuoteRuneToASCII('\u008a')
 		ref := refO[1 : len(refO)-1]
-		fmt.Println("---- if t == 138 : ", t, t.(int), 138, t == 138, t.(int) == 138)
-		fmt.Println("---- if unquoted == ref : ", unquoted, ref, unquoted == ref)
-		if t == 138 && unquoted == ref {
+
+		if t != nil {
+			fmt.Println("---- if t == 138 : ", t, t.(int), t == 138, t.(int) == 138)
+			fmt.Println("---- if unquoted == ref : ", unquoted, ref, unquoted == ref)
+		}
+
+		if t != nil && t.(int) == 138 && unquoted == ref {
+
 			fmt.Println("---- stlUnicodeMapping t : ", t)
 			fmt.Println("---- stlUnicodeMapping e : ", e)
 			fmt.Println("---- stlUnicodeMapping refO : ", refO)
