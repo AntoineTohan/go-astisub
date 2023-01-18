@@ -1056,12 +1056,24 @@ func encodeTextSTL(i string) (o []byte) {
 		ref := refO[1 : len(refO)-1]
 
 		if t != nil && t.(uint8) == 138 && unquoted == ref {
-			//BREAK LINE
+			// END BOX
+			o = append(o, byte('\x0A'))
+			o = append(o, byte('\x0A'))
+
+			// BREAK LINE
 			o = append(o, byte('\x8A'))
 			o = append(o, byte('\x8A'))
 
 			// DOUBLE HEIGHT SECOND LINE
 			o = append(o, byte('\x0D'))
+
+			// START BOX
+			o = append(o, byte('\x0B'))
+			o = append(o, byte('\x0B'))
+
+			// COLOR OF TEXT CAPTION
+			o = append(o, byte('\x02'))
+			return
 		} else if v, ok := stlUnicodeMapping.GetInverse(string(c)); ok {
 			o = append(o, v.(byte))
 		} else if v, ok := stlUnicodeDiacritic.GetInverse(string(c)); ok {
