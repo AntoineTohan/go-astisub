@@ -1049,10 +1049,8 @@ func encodeTextSTL(i string) (o []byte) {
 	o = append(o, byte('\x02'))
 
 	for _, c := range i {
-		fmt.Println("---- stlUnicodeMapping string(c) : ", string(c))
 		quoted := strconv.QuoteRuneToASCII(c)
 		unquoted := quoted[1 : len(quoted)-1]
-		fmt.Println("---- stlUnicodeMapping unquoted : ", unquoted)
 
 		t, _ := stlUnicodeMapping.GetInverse(string(c))
 		refO := strconv.QuoteRuneToASCII('\u008a')
