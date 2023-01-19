@@ -1073,7 +1073,6 @@ func encodeTextSTL(i string) (o []byte) {
 
 			// COLOR OF TEXT CAPTION
 			o = append(o, byte('\x02'))
-			return
 		} else if v, ok := stlUnicodeMapping.GetInverse(string(c)); ok {
 			o = append(o, v.(byte))
 		} else if v, ok := stlUnicodeDiacritic.GetInverse(string(c)); ok {
