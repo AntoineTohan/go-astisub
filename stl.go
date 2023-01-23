@@ -793,14 +793,20 @@ func (t *ttiBlock) bytes(g *gsiBlock, item *Item) (o []byte) {
 	o = append(o, byte(uint8(t.subtitleGroupNumber))) // Subtitle group number
 	var b = make([]byte, 2)
 	binary.LittleEndian.PutUint16(b, uint16(t.subtitleNumber))
-	o = append(o, b...)                                                                                                                                                    // Subtitle number
-	o = append(o, byte(uint8(t.extensionBlockNumber)))                                                                                                                     // Extension block number
-	o = append(o, t.cumulativeStatus)                                                                                                                                      // Cumulative status
-	o = append(o, formatDurationSTLBytes(t.timecodeIn, g.framerate)...)                                                                                                    // Timecode in
-	o = append(o, formatDurationSTLBytes(t.timecodeOut, g.framerate)...)                                                                                                   // Timecode out
-	o = append(o, validateVerticalPosition(t.verticalPosition, g.displayStandardCode))                                                                                     // Vertical position
-	o = append(o, t.justificationCode)                                                                                                                                     // Justification code
-	o = append(o, t.commentFlag)                                                                                                                                           // Comment flag
+	o = append(o, b...)                                                                // Subtitle number
+	o = append(o, byte(uint8(t.extensionBlockNumber)))                                 // Extension block number
+	o = append(o, t.cumulativeStatus)                                                  // Cumulative status
+	o = append(o, formatDurationSTLBytes(t.timecodeIn, g.framerate)...)                // Timecode in
+	o = append(o, formatDurationSTLBytes(t.timecodeOut, g.framerate)...)               // Timecode out
+	o = append(o, validateVerticalPosition(t.verticalPosition, g.displayStandardCode)) // Vertical position
+	o = append(o, t.justificationCode)                                                 // Justification code
+	o = append(o, t.commentFlag)                                                       // Comment flag
+
+	fmt.Println("----*item.Style.InlineStyle.TeletextColor", *item.Style.InlineStyle.TeletextColor)
+	fmt.Println("----*item.Style.InlineStyle.TeletextColor", *item.InlineStyle.TeletextColor)
+	fmt.Println("----*item.Style.InlineStyle.TeletextColor", *item.InlineStyle)
+	fmt.Println("----*item.Style.InlineStyle.TeletextColor", *item.Style)
+
 	o = append(o, astikit.BytesPad(encodeTextSTL(string(t.text), RgbToSTLColor(*item.Style.InlineStyle.TeletextColor)), '\x8f', 112, astikit.PadRight, astikit.PadCut)...) // Text field
 	return
 }
