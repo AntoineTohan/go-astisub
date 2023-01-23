@@ -767,20 +767,41 @@ func parseTTIBlock(p []byte, framerate int) *ttiBlock {
 	}
 }
 
+// convert RGB color to STL EBU color
+func RgbToSTLColor(c Color) (color rune) {
+	if c.Red == 0 && c.Green == 0 && c.Blue == 0 {
+		return '\x00' // BLACK
+	} else if c.Red == 255 && c.Green == 0 && c.Blue == 0 {
+		return '\x01' // RED
+	} else if c.Red == 0 && c.Green == 255 && c.Blue == 0 {
+		return '\x02' // GREEN
+	} else if c.Red == 255 && c.Green == 255 && c.Blue == 0 {
+		return '\x03' // YELLOW
+	} else if c.Red == 0 && c.Green == 0 && c.Blue == 255 {
+		return '\x04' // BLUE
+	} else if c.Red == 255 && c.Green == 0 && c.Blue == 255 {
+		return '\x05' // MAGENTA
+	} else if c.Red == 0 && c.Green == 255 && c.Blue == 255 {
+		return '\x06' // CYAN
+	} else {
+		return '\x07' // WHITE
+	}
+}
+
 // bytes transforms the TTI block into []byte
-func (t *ttiBlock) bytes(g *gsiBlock) (o []byte) {
+func (t *ttiBlock) bytes(g *gsiBlock, item *Item) (o []byte) {
 	o = append(o, byte(uint8(t.subtitleGroupNumber))) // Subtitle group number
 	var b = make([]byte, 2)
 	binary.LittleEndian.PutUint16(b, uint16(t.subtitleNumber))
-	o = append(o, b...)                                                                                              // Subtitle number
-	o = append(o, byte(uint8(t.extensionBlockNumber)))                                                               // Extension block number
-	o = append(o, t.cumulativeStatus)                                                                                // Cumulative status
-	o = append(o, formatDurationSTLBytes(t.timecodeIn, g.framerate)...)                                              // Timecode in
-	o = append(o, formatDurationSTLBytes(t.timecodeOut, g.framerate)...)                                             // Timecode out
-	o = append(o, validateVerticalPosition(t.verticalPosition, g.displayStandardCode))                               // Vertical position
-	o = append(o, t.justificationCode)                                                                               // Justification code
-	o = append(o, t.commentFlag)                                                                                     // Comment flag
-	o = append(o, astikit.BytesPad(encodeTextSTL(string(t.text)), '\x8f', 112, astikit.PadRight, astikit.PadCut)...) // Text field
+	o = append(o, b...)                                                                                                                                                    // Subtitle number
+	o = append(o, byte(uint8(t.extensionBlockNumber)))                                                                                                                     // Extension block number
+	o = append(o, t.cumulativeStatus)                                                                                                                                      // Cumulative status
+	o = append(o, formatDurationSTLBytes(t.timecodeIn, g.framerate)...)                                                                                                    // Timecode in
+	o = append(o, formatDurationSTLBytes(t.timecodeOut, g.framerate)...)                                                                                                   // Timecode out
+	o = append(o, validateVerticalPosition(t.verticalPosition, g.displayStandardCode))                                                                                     // Vertical position
+	o = append(o, t.justificationCode)                                                                                                                                     // Justification code
+	o = append(o, t.commentFlag)                                                                                                                                           // Comment flag
+	o = append(o, astikit.BytesPad(encodeTextSTL(string(t.text), RgbToSTLColor(*item.Style.InlineStyle.TeletextColor)), '\x8f', 112, astikit.PadRight, astikit.PadCut)...) // Text field
 	return
 }
 
@@ -943,7 +964,7 @@ func (s Subtitles) WriteToSTL(o io.Writer) (err error) {
 	// Loop through items
 	for idx, item := range s.Items {
 		// Write tti block
-		if _, err = o.Write(newTTIBlock(item, idx+1).bytes(g)); err != nil {
+		if _, err = o.Write(newTTIBlock(item, idx+1).bytes(g, item)); err != nil {
 			err = fmt.Errorf("astisub: writing tti block #%d failed: %w", idx+1, err)
 			return
 		}
@@ -1034,7 +1055,7 @@ var stlUnicodeMapping = astikit.NewBiMap().
 	Set(byte('\xff'), "\u00AD")  // Soft hyphen
 
 // encodeTextSTL encodes the STL text
-func encodeTextSTL(i string) (o []byte) {
+func encodeTextSTL(i string, color rune) (o []byte) {
 	i = string(norm.NFD.Bytes([]byte(i)))
 
 	// DOUBLE HEIGHT FIRST LINE
@@ -1045,7 +1066,7 @@ func encodeTextSTL(i string) (o []byte) {
 	o = append(o, byte('\x0B'))
 
 	// COLOR OF TEXT CAPTION
-	o = append(o, byte('\x02'))
+	o = append(o, byte(color))
 
 	for _, c := range i {
 		quoted := strconv.QuoteRuneToASCII(c)
@@ -1072,7 +1093,8 @@ func encodeTextSTL(i string) (o []byte) {
 			o = append(o, byte('\x0B'))
 
 			// COLOR OF TEXT CAPTION
-			o = append(o, byte('\x02'))
+			o = append(o, byte(color))
+
 		} else if v, ok := stlUnicodeMapping.GetInverse(string(c)); ok {
 			o = append(o, v.(byte))
 		} else if v, ok := stlUnicodeDiacritic.GetInverse(string(c)); ok {
