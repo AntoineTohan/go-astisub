@@ -770,21 +770,21 @@ func parseTTIBlock(p []byte, framerate int) *ttiBlock {
 // convert RGB color to STL EBU color
 func RgbToSTLColor(c *Color) (color rune) {
 	if c.Red == 0 && c.Green == 0 && c.Blue == 0 {
-		return '\x10' // BLACK
+		return '\x00' // BLACK
 	} else if c.Red == 255 && c.Green == 0 && c.Blue == 0 {
-		return '\x11' // RED
+		return '\x01' // RED
 	} else if c.Red == 0 && c.Green == 255 && c.Blue == 0 {
-		return '\x12' // GREEN
+		return '\x02' // GREEN
 	} else if c.Red == 255 && c.Green == 255 && c.Blue == 0 {
-		return '\x13' // YELLOW
+		return '\x03' // YELLOW
 	} else if c.Red == 0 && c.Green == 0 && c.Blue == 255 {
-		return '\x14' // BLUE
+		return '\x04' // BLUE
 	} else if c.Red == 255 && c.Green == 0 && c.Blue == 255 {
-		return '\x15' // MAGENTA
+		return '\x05' // MAGENTA
 	} else if c.Red == 0 && c.Green == 255 && c.Blue == 255 {
-		return '\x16' // CYAN
+		return '\x06' // CYAN
 	} else {
-		return '\x17' // WHITE
+		return '\x07' // WHITE
 	}
 }
 
