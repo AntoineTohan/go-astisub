@@ -221,7 +221,26 @@ func ReadFromSTL(i io.Reader, opts STLOptions) (o *Subtitles, err error) {
 		STLRevisionDate:                                     &g.revisionDate,
 		STLSubtitleListReferenceCode:                        g.subtitleListReferenceCode,
 		Title:                                               g.originalProgramTitle,
+		STLCharacterCodeTableNumber:                         g.characterCodeTableNumber,
+		STLCodePageNumber:                                   g.codePageNumber,
+		STLEditorContactDetails:                             g.editorContactDetails,
+		STLEditorName:                                       g.editorName,
+		STLOriginalProgramTitle:                             g.originalProgramTitle,
+		STLTranslatedEpisodeTitle:                           g.translatedEpisodeTitle,
+		STLTranslatedProgramTitle:                           g.translatedProgramTitle,
+		STLTranslatorContactDetails:                         g.translatorContactDetails,
+		STLTranslatorName:                                   g.translatorName,
+		STLUserDefinedArea:                                  g.userDefinedArea,
+		STLRevisionNumber:                                   g.revisionNumber,
+		STLDiskSequenceNumber:                               g.diskSequenceNumber,
+		STLTimecodeFirstInCue:                               g.timecodeFirstInCue,
+		STLTimecodeStatus:                                   g.timecodeStatus,
+		STLTotalNumberOfDisks:                               g.totalNumberOfDisks,
+		STLTotalNumberOfSubtitleGroups:                      g.totalNumberOfSubtitleGroups,
+		STLTotalNumberOfSubtitles:                           g.totalNumberOfSubtitles,
+		STLTotalNumberOfTTIBlocks:                           g.totalNumberOfTTIBlocks,
 	}
+
 	if !opts.IgnoreTimecodeStartOfProgramme {
 		o.Metadata.STLTimecodeStartOfProgramme = g.timecodeStartOfProgramme
 	}
