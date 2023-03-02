@@ -452,7 +452,7 @@ func newGSIBlock(s Subtitles) (g *gsiBlock) {
 	return
 }
 
-func NewGSI(s Subtitles) (g *gsiBlock) {
+func NewGsiTc(s Subtitles) (g *gsiBlock) {
 	// Init
 	const (
 		Nanosecond  time.Duration = 1
@@ -667,6 +667,49 @@ func parseGSIBlock(b []byte) (g *gsiBlock, err error) {
 
 // bytes transforms the GSI block into []byte
 func (b gsiBlock) bytes() (o []byte) {
+	bs := make([]byte, 4)
+	binary.BigEndian.PutUint32(bs, b.codePageNumber)
+	o = append(o, astikit.BytesPad(bs[1:], ' ', 3, astikit.PadRight, astikit.PadCut)...) // Code page number
+	// Disk format code
+	var f string
+	if v, ok := stlFramerateMapping.GetInverse(b.framerate); ok {
+		f = v.(string)
+	}
+	o = append(o, astikit.BytesPad([]byte(f), ' ', 8, astikit.PadRight, astikit.PadCut)...)
+	o = append(o, astikit.BytesPad([]byte(b.displayStandardCode), ' ', 1, astikit.PadRight, astikit.PadCut)...) // Display standard code
+	binary.BigEndian.PutUint16(bs, b.characterCodeTableNumber)
+	o = append(o, astikit.BytesPad(bs[:2], ' ', 2, astikit.PadRight, astikit.PadCut)...)                                                             // Character code table number
+	o = append(o, astikit.BytesPad([]byte(b.languageCode), ' ', 2, astikit.PadRight, astikit.PadCut)...)                                             // Language code
+	o = append(o, astikit.BytesPad([]byte(b.originalProgramTitle), ' ', 32, astikit.PadRight, astikit.PadCut)...)                                    // Original program title
+	o = append(o, astikit.BytesPad([]byte(b.originalEpisodeTitle), ' ', 32, astikit.PadRight, astikit.PadCut)...)                                    // Original episode title
+	o = append(o, astikit.BytesPad([]byte(b.translatedProgramTitle), ' ', 32, astikit.PadRight, astikit.PadCut)...)                                  // Translated program title
+	o = append(o, astikit.BytesPad([]byte(b.translatedEpisodeTitle), ' ', 32, astikit.PadRight, astikit.PadCut)...)                                  // Translated episode title
+	o = append(o, astikit.BytesPad([]byte(b.translatorName), ' ', 32, astikit.PadRight, astikit.PadCut)...)                                          // Translator's name
+	o = append(o, astikit.BytesPad([]byte(b.translatorContactDetails), ' ', 32, astikit.PadRight, astikit.PadCut)...)                                // Translator's contact details
+	o = append(o, astikit.BytesPad([]byte(b.subtitleListReferenceCode), ' ', 16, astikit.PadRight, astikit.PadCut)...)                               // Subtitle list reference code
+	o = append(o, astikit.BytesPad([]byte(b.creationDate.Format("060102")), ' ', 6, astikit.PadRight, astikit.PadCut)...)                            // Creation date
+	o = append(o, astikit.BytesPad([]byte(b.revisionDate.Format("060102")), ' ', 6, astikit.PadRight, astikit.PadCut)...)                            // Revision date
+	o = append(o, astikit.BytesPad([]byte(strconv.Itoa(b.revisionNumber)), '0', 2, astikit.PadCut)...)                                               // Revision number
+	o = append(o, astikit.BytesPad([]byte(strconv.Itoa(b.totalNumberOfTTIBlocks)), '0', 5, astikit.PadCut)...)                                       // Total number of TTI blocks
+	o = append(o, astikit.BytesPad([]byte(strconv.Itoa(b.totalNumberOfSubtitles)), '0', 5, astikit.PadCut)...)                                       // Total number of subtitles
+	o = append(o, astikit.BytesPad([]byte(strconv.Itoa(b.totalNumberOfSubtitleGroups)), '0', 3, astikit.PadCut)...)                                  // Total number of subtitle groups
+	o = append(o, astikit.BytesPad([]byte(strconv.Itoa(b.maximumNumberOfDisplayableCharactersInAnyTextRow)), '0', 2, astikit.PadCut)...)             // Maximum number of displayable characters in any text row
+	o = append(o, astikit.BytesPad([]byte(strconv.Itoa(b.maximumNumberOfDisplayableRows)), '0', 2, astikit.PadCut)...)                               // Maximum number of displayable rows
+	o = append(o, astikit.BytesPad([]byte(b.timecodeStatus), ' ', 1, astikit.PadRight, astikit.PadCut)...)                                           // Timecode status
+	o = append(o, astikit.BytesPad([]byte(formatDurationSTL(b.timecodeStartOfProgramme, b.framerate)), ' ', 8, astikit.PadRight, astikit.PadCut)...) // Timecode start of a programme
+	o = append(o, astikit.BytesPad([]byte(formatDurationSTL(b.timecodeFirstInCue, b.framerate)), ' ', 8, astikit.PadRight, astikit.PadCut)...)       // Timecode first in cue
+	o = append(o, astikit.BytesPad([]byte(strconv.Itoa(b.totalNumberOfDisks)), ' ', 1, astikit.PadRight, astikit.PadCut)...)                         // Total number of disks
+	o = append(o, astikit.BytesPad([]byte(strconv.Itoa(b.diskSequenceNumber)), ' ', 1, astikit.PadRight, astikit.PadCut)...)                         // Disk sequence number
+	o = append(o, astikit.BytesPad([]byte(b.countryOfOrigin), ' ', 3, astikit.PadRight, astikit.PadCut)...)                                          // Country of origin
+	o = append(o, astikit.BytesPad([]byte(b.publisher), ' ', 32, astikit.PadRight, astikit.PadCut)...)                                               // Publisher
+	o = append(o, astikit.BytesPad([]byte(b.editorName), ' ', 32, astikit.PadRight, astikit.PadCut)...)                                              // Editor's name
+	o = append(o, astikit.BytesPad([]byte(b.editorContactDetails), ' ', 32, astikit.PadRight, astikit.PadCut)...)                                    // Editor's contact details
+	o = append(o, astikit.BytesPad([]byte{}, ' ', 75+576, astikit.PadRight, astikit.PadCut)...)                                                      // Spare bytes + user defined area                                                                                           //                                                                                                                      // Editor's contact details
+	return
+}
+
+// bytes transforms the GSI block into []byte
+func (b gsiBlock) BytesTc() (o []byte) {
 	bs := make([]byte, 4)
 	binary.BigEndian.PutUint32(bs, b.codePageNumber)
 	o = append(o, astikit.BytesPad(bs[1:], ' ', 3, astikit.PadRight, astikit.PadCut)...) // Code page number
