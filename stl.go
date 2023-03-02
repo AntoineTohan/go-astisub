@@ -536,7 +536,7 @@ func NewGSI(s Subtitles) (g *gsiBlock) {
 		g.timecodeStartOfProgramme = s.Metadata.STLTimecodeStartOfProgramme
 		g.timecodeFirstInCue = s.Metadata.STLTimecodeFirstInCue
 	}
-	return
+	return g
 }
 
 // parseGSIBlock parses a GSI block
