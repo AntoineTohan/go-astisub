@@ -876,6 +876,34 @@ func newTTIBlock(i *Item, idx int) (t *ttiBlock) {
 	return
 }
 
+func NewTTIBlockTc(i *Item, idx int) (t *ttiBlock) {
+	// Init
+
+	t = &ttiBlock{
+		commentFlag:          stlCommentFlagTextContainsSubtitleData,
+		cumulativeStatus:     stlCumulativeStatusSubtitleNotPartOfACumulativeSet,
+		extensionBlockNumber: 255,
+		justificationCode:    getSTLJustification(int(*i.InlineStyle.STLJustification)),
+		subtitleGroupNumber:  0,
+		subtitleNumber:       idx,
+		timecodeIn:           i.StartAt,
+		timecodeOut:          i.EndAt,
+		verticalPosition:     stlVerticalPositionFromStyle(i.InlineStyle),
+	}
+
+	// Add text
+	var lines []string
+	for _, l := range i.Lines {
+		var lineItems []string
+		for _, li := range l.Items {
+			lineItems = append(lineItems, li.STLString())
+		}
+		lines = append(lines, strings.Join(lineItems, " "))
+	}
+	t.text = []byte(strings.Join(lines, string(rune(stlLineSeparator))))
+	return
+}
+
 func stlVerticalPositionFromStyle(sa *StyleAttributes) int {
 	if sa != nil && sa.STLPosition != nil {
 		return sa.STLPosition.VerticalPosition
@@ -939,6 +967,23 @@ func RgbToSTLColor(c *Color) (color rune) {
 
 // bytes transforms the TTI block into []byte
 func (t *ttiBlock) bytes(g *gsiBlock, item *Item) (o []byte) {
+	o = append(o, byte(uint8(t.subtitleGroupNumber))) // Subtitle group number
+	var b = make([]byte, 2)
+	binary.LittleEndian.PutUint16(b, uint16(t.subtitleNumber))
+	o = append(o, b...)                                                                                                                                             // Subtitle number
+	o = append(o, byte(uint8(t.extensionBlockNumber)))                                                                                                              // Extension block number
+	o = append(o, t.cumulativeStatus)                                                                                                                               // Cumulative status
+	o = append(o, formatDurationSTLBytes(t.timecodeIn, g.framerate)...)                                                                                             // Timecode in
+	o = append(o, formatDurationSTLBytes(t.timecodeOut, g.framerate)...)                                                                                            // Timecode out
+	o = append(o, validateVerticalPosition(t.verticalPosition, g.displayStandardCode))                                                                              // Vertical position
+	o = append(o, t.justificationCode)                                                                                                                              // Justification code
+	o = append(o, t.commentFlag)                                                                                                                                    // Comment flag
+	o = append(o, astikit.BytesPad(encodeTextSTL(string(t.text), RgbToSTLColor(item.InlineStyle.TeletextColor)), '\x8f', 112, astikit.PadRight, astikit.PadCut)...) // Text field
+	return
+}
+
+// bytes transforms the TTI block into []byte
+func (t *ttiBlock) BytesTc(g *gsiBlock, item *Item) (o []byte) {
 	o = append(o, byte(uint8(t.subtitleGroupNumber))) // Subtitle group number
 	var b = make([]byte, 2)
 	binary.LittleEndian.PutUint16(b, uint16(t.subtitleNumber))
