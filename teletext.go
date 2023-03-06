@@ -874,23 +874,21 @@ func parseTeletextRow(i *Item, d decoder, fs func() styler, row []byte) {
 		h := fmt.Sprintf("%02x", v)
 		switch h {
 		case "00":
-			color = ColorBlack
+			i.InlineStyle.TeletextColor = ColorBlack
 		case "01":
-			color = ColorRed
+			i.InlineStyle.TeletextColor = ColorRed
 		case "02":
-			color = ColorGreen
+			i.InlineStyle.TeletextColor = ColorGreen
 		case "03":
-			color = ColorYellow
+			i.InlineStyle.TeletextColor = ColorYellow
 		case "04":
-			color = ColorBlue
+			i.InlineStyle.TeletextColor = ColorBlue
 		case "05":
-			color = ColorMagenta
+			i.InlineStyle.TeletextColor = ColorMagenta
 		case "06":
-			color = ColorCyan
+			i.InlineStyle.TeletextColor = ColorCyan
 		case "07":
-			color = ColorWhite
-		default:
-			color = ColorWhite
+			i.InlineStyle.TeletextColor = ColorWhite
 		}
 
 		switch v {
@@ -952,6 +950,11 @@ func parseTeletextRow(i *Item, d decoder, fs func() styler, row []byte) {
 			// Append text
 			li.Text += string(d.decode(v))
 		}
+	}
+
+	// IF NO COLOR SET A DEFAULT: WHITE
+	if i.InlineStyle.TeletextColor == nil {
+		i.InlineStyle.TeletextColor = ColorWhite
 	}
 
 	// Append line item
