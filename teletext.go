@@ -870,23 +870,30 @@ func parseTeletextRow(i *Item, d decoder, fs func() styler, row []byte) {
 		// Get spacing attributes
 		var color *Color
 		var doubleHeight, doubleSize, doubleWidth *bool
-		switch v {
-		case 0x0:
+
+		h := fmt.Sprintf("%02x", v)
+		switch h {
+		case "00":
 			color = ColorBlack
-		case 0x1:
+		case "01":
 			color = ColorRed
-		case 0x2:
+		case "02":
 			color = ColorGreen
-		case 0x3:
+		case "03":
 			color = ColorYellow
-		case 0x4:
+		case "04":
 			color = ColorBlue
-		case 0x5:
+		case "05":
 			color = ColorMagenta
-		case 0x6:
+		case "06":
 			color = ColorCyan
-		case 0x7:
+		case "07":
 			color = ColorWhite
+		default:
+			color = ColorWhite
+		}
+
+		switch v {
 		case 0xa:
 			started = false
 		case 0xb:
