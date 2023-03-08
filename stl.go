@@ -996,6 +996,14 @@ func (t *ttiBlock) BytesTc(g *gsiBlock, item *Item) (o []byte) {
 	o = append(o, t.justificationCode)                                                                                                                              // Justification code
 	o = append(o, t.commentFlag)                                                                                                                                    // Comment flag
 	o = append(o, astikit.BytesPad(encodeTextSTL(string(t.text), RgbToSTLColor(item.InlineStyle.TeletextColor)), '\x8f', 112, astikit.PadRight, astikit.PadCut)...) // Text field
+
+	var color1 = item.Lines[0].Items[0].InlineStyle.TeletextColor
+	if len(item.Lines) > 1 {
+		var color2 = item.Lines[1].Items[0].InlineStyle.TeletextColor
+		o = append(o, astikit.BytesPad(encodeTextSTLTc(string(t.text), RgbToSTLColor(color1), RgbToSTLColor(color2)), '\x8f', 112, astikit.PadRight, astikit.PadCut)...) // Text field
+	} else {
+		o = append(o, astikit.BytesPad(encodeTextSTLTc(string(t.text), RgbToSTLColor(color1), RgbToSTLColor(color1)), '\x8f', 112, astikit.PadRight, astikit.PadCut)...) // Text field
+	}
 	return
 }
 
@@ -1288,6 +1296,62 @@ func encodeTextSTL(i string, color rune) (o []byte) {
 
 			// COLOR OF TEXT CAPTION
 			o = append(o, byte(color))
+
+		} else if v, ok := stlUnicodeMapping.GetInverse(string(c)); ok {
+			o = append(o, v.(byte))
+		} else if v, ok := stlUnicodeDiacritic.GetInverse(string(c)); ok {
+			o = append(o[:len(o)-1], v.(byte), o[len(o)-1])
+		} else {
+			o = append(o, byte(c))
+		}
+	}
+
+	// END BOX
+	o = append(o, byte('\x0A'))
+	o = append(o, byte('\x0A'))
+	return
+}
+
+// encodeTextSTL encodes the STL text
+func encodeTextSTLTc(i string, color1 rune, color2 rune) (o []byte) {
+	i = string(norm.NFD.Bytes([]byte(i)))
+
+	// DOUBLE HEIGHT FIRST LINE
+	o = append(o, byte('\x0D'))
+
+	// START BOX
+	o = append(o, byte('\x0B'))
+	o = append(o, byte('\x0B'))
+
+	// COLOR OF TEXT CAPTION
+	o = append(o, byte(color1))
+
+	for _, c := range i {
+		quoted := strconv.QuoteRuneToASCII(c)
+		unquoted := quoted[1 : len(quoted)-1]
+
+		t, _ := stlUnicodeMapping.GetInverse(string(c))
+		refO := strconv.QuoteRuneToASCII('\u008a')
+		ref := refO[1 : len(refO)-1]
+
+		if t != nil && t.(uint8) == 138 && unquoted == ref {
+			// END BOX
+			o = append(o, byte('\x0A'))
+			o = append(o, byte('\x0A'))
+
+			// BREAK LINE
+			o = append(o, byte('\x8A'))
+			o = append(o, byte('\x8A'))
+
+			// DOUBLE HEIGHT SECOND LINE
+			o = append(o, byte('\x0D'))
+
+			// START BOX
+			o = append(o, byte('\x0B'))
+			o = append(o, byte('\x0B'))
+
+			// COLOR OF TEXT CAPTION
+			o = append(o, byte(color2))
 
 		} else if v, ok := stlUnicodeMapping.GetInverse(string(c)); ok {
 			o = append(o, v.(byte))

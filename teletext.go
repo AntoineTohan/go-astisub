@@ -952,11 +952,6 @@ func parseTeletextRow(i *Item, d decoder, fs func() styler, row []byte) {
 		}
 	}
 
-	// IF NO COLOR SET A DEFAULT: WHITE
-	if i.InlineStyle.TeletextColor == nil {
-		i.InlineStyle.TeletextColor = ColorWhite
-	}
-
 	// Append line item
 	appendTeletextLineItem(&l, li, s)
 
