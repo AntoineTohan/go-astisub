@@ -284,9 +284,12 @@ func ReadFromSTL(i io.Reader, opts STLOptions) (o *Subtitles, err error) {
 
 		// Create item
 		var i = &Item{
-			EndAt:       t.timecodeOut - o.Metadata.STLTimecodeStartOfProgramme,
+			// STL --> STL NO NEED TO CHANGE  TIMECODE
+			// EndAt:       t.timecodeOut - o.Metadata.STLTimecodeStartOfProgramme,
+			EndAt:       t.timecodeOut,
 			InlineStyle: &styleAttributes,
-			StartAt:     t.timecodeIn - o.Metadata.STLTimecodeStartOfProgramme,
+			// StartAt:     t.timecodeIn - o.Metadata.STLTimecodeStartOfProgramme,
+			StartAt: t.timecodeIn,
 		}
 
 		// Loop through rows
